@@ -178,7 +178,7 @@
 
             g_grid = new GridAxis();
 
-            renderLoop = new RenderLoop(draw).start();
+            renderLoop = new RenderLoop(draw(objects)).start();
         }
 
         function draw(deltaTime, objects){
@@ -200,10 +200,16 @@
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             g_cameraController.update();
 
-            objects.foreach(object => object.update())
-            
-            let shaderData = { lightingData: g_lightingData};
-            objects.foreach(object => object.renderer.drawModel(object, g_camera, shaderData))
+            //objects.forEach(update());
+            if (objects !== undefined) {
+                for (let i = 0; i < objects.length; i++) {
+                    let currentObject = objects[i];
+                    currentObject.update();
+                }
+
+                let shaderData = { lightingData: g_lightingData};
+                objects.forEach(object => object.renderer.drawModel(object, g_camera, shaderData))
+            }
 
             // draws grid
             g_grid.draw(g_camera);
