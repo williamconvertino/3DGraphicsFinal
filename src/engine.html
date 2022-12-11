@@ -62,11 +62,8 @@
         var lightingData = {}
 
         // dat.gui to mute/unmute our sound
-        var gui_data = {mute: false};
-        var gui = new dat.GUI({ width: 100 } );
-        gui.add(gui_data, "mute").onChange(function(value){music?.mute(value);});
+        var gui = new dat.GUI();
 
-        
         //---------------------Lighting testing (Maybe remove later)---------------------------------
         var g_lightingData = {
             lightDirX: -1,
@@ -88,7 +85,6 @@
 
         // magical dat.gui stuff that connects the lighting values to the
         // user interface on the top right
-        var gui = new dat.GUI();
         gui.add(g_lightingData, "lightDirX", -10.0, 10.0);
         gui.add(g_lightingData, "lightDirY", -10.0, 10.0);
         gui.add(g_lightingData, "lightDirZ", -10.0, 10.0);
@@ -107,6 +103,11 @@
         gui.add(g_lightingData, "ambientColorG", 0.0, 1.0);
         gui.add(g_lightingData, "ambientColorB", 0.0, 1.0);
         //-------------------------------------------------------------------------------------------------
+
+
+        var gui_data = {mute: false};
+        gui.add(gui_data, "mute").onChange(function(value){music?.mute(value);});
+
 
         let bpm = 101; // Lifelike by Porter Robinson has 101 BPM
         let bps = bpm/60.0; // this many beats per second
@@ -192,31 +193,6 @@
             1,
             1);
             shaderData.lightingData = lightingData;
-            
-            //---TEST LIGHTING (will override other lighting)
-
-            lightingData.directionalLight = new V3(g_lightingData.lightDirX,
-                                                g_lightingData.lightDirY,
-                                                g_lightingData.lightDirZ);
-            lightingData.directionalColor = new V3(g_lightingData.lightColorR,
-                                                g_lightingData.lightColorG,
-                                                g_lightingData.lightColorB);
-
-            lightingData.pointPosition = new V3(
-                g_lightingData.pointLightPosX,
-                g_lightingData.pointLightPosY,
-                g_lightingData.pointLightPosZ
-            );
-
-            lightingData.pointColor = new V3(g_lightingData.pointLightColorR,
-            g_lightingData.pointLightColorG,
-            g_lightingData.pointLightColorB);
-
-            lightingData.ambientColor = new V3(g_lightingData.ambientColorR,
-                                            g_lightingData.ambientColorG,
-                                            g_lightingData.ambientColorB);
-            shaderData.lightingData = lightingData;
-            //------END TEST LIGHTING--
 
 
             //Define materials
@@ -239,8 +215,39 @@
             renderLoop = new RenderLoop((deltaTime) => draw(deltaTime, objects)).start();
         }
 
+        function doTestLighting() {
+
+            lightingData.directionalLight = new V3(g_lightingData.lightDirX,
+                                                g_lightingData.lightDirY,
+                                                g_lightingData.lightDirZ);
+            lightingData.directionalColor = new V3(g_lightingData.lightColorR,
+                                                g_lightingData.lightColorG,
+                                                g_lightingData.lightColorB);
+
+            lightingData.pointPosition = new V3(
+                g_lightingData.pointLightPosX,
+                g_lightingData.pointLightPosY,
+                g_lightingData.pointLightPosZ
+            );
+
+            lightingData.pointColor = new V3(g_lightingData.pointLightColorR,
+            g_lightingData.pointLightColorG,
+            g_lightingData.pointLightColorB);
+
+            lightingData.ambientColor = new V3(g_lightingData.ambientColorR,
+                                            g_lightingData.ambientColorG,
+                                            g_lightingData.ambientColorB);
+            shaderData.lightingData = lightingData;
+            console.log(shaderData.lightingData);
+            
+        }
+
         function draw(deltaTime, objects){
             Input.update();
+            
+            //---TEST LIGHTING (will override other lighting)
+            doTestLighting();
+            //------END TEST LIGHTING--
 
             timer += deltaTime; // count up timer variable
             if(timer > beatDuration){ // do stuff every beat
