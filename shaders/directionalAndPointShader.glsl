@@ -100,7 +100,7 @@ void main(void){
     float pointdIntensity = max(0.0, dot(normal, v_surfaceToLight));
     vec3 pointdColor = u_pointColor * pointdIntensity;
     finalColor += clamp(u_ambientColor + pointdColor, vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
-    finalColor *= u_tint.rgb * texture2d(u_mainTex, v_texcoord);
+    finalColor *= u_tint.rgb * texture2D(u_mainTex, v_texcoord).rgb;
 
     float pointspecular = 0.0;
     if (pointdIntensity > 0.0) {
