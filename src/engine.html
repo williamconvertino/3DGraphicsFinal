@@ -96,31 +96,25 @@
             GLUtils.loadShaders(shaderPaths, init);
         }
 
-        function addObject(name, renderer, scale, position, textureName, textureLocation, meshName, meshLocation, primitive){
-            var thisObject;
-            thisObject.name = name;
-            thisObject.renderer = renderer;
-            thisObject.scale = scale;
-            thisObject.position = position;
+        function addObject(object){
 
             // if the object is a primitive (which is when the primitive variable exists), set it to the appropriate primitive mesh
-            if (primitive === 'no') {
-                let thisMesh = Primitives[primitive].getMesh();
+            if (object.primitive !== 'no') {
+                let thisMesh = Primitives[object.primitive].getMesh();
             }
             // if the object is not a primitive, load its obj file for the mesh
             else {
-                let thisMesh = OBJLoader.getMesh(meshName, meshLocation);
+                let thisMesh = OBJLoader.getMesh(object.meshName, object.meshLocation);
             }
 
-            let thisMesh = OBJLoader.getMesh(meshName, meshLocation);
+            let thisMesh = OBJLoader.getMesh(object.meshName, object.meshLocation);
 
-            GLUtils.loadsTexture(textureName, textureLocation);
-            let thisMat = { tint: new V3(1,1,1), mainTexture:textureName}
-            thisObject.mat = thisMat;
+            GLUtils.loadTexture(object.textureName, object.textureLocation);
+            let thisMat = { tint: new V3(1,1,1), mainTexture:object.textureName}
 
-            thisObject = new ModelTransform(thisMesh, thisMat);
-            thisObject.position.set = position;
-            thisObject.scale.set = scale;
+            let thisObject = new ModelTransform(thisMesh, thisMat);
+            thisObject.position.set = object.position;
+            thisObject.scale.set = object.scale;
             objects.push(thisObject);
         }
 
@@ -178,11 +172,13 @@
             music.play();
             music.mute(gui_data.mute);
 
-            addObject("bunny", g_renderer, [1,1,1], [0,0,0], "bunnyMat", "ressources/bunny.jpg", "bunnyMesh", "ressources/bunny.obj", "no");
+            let bunny = {name: "bunny", renderer: g_renderer, scale: [1,1,1], position: [0,0,0], textureName: "bunnyMat", textureLocation: "ressources/bunny.jpg", meshName: "bunnyMesh", meshLocation: "../resources/bunny.obj", primitive: "no"}
+
+            addObject(bunny);
 
             g_grid = new GridAxis();
 
-            renderLoop = new RenderLoop(draw).start();
+            renderLoop = new RenderLoop(draw(objects)).start();
         }
 
         function draw(deltaTime, objects){
@@ -204,10 +200,16 @@
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             g_cameraController.update();
 
-            objects.foreach(object => object.update())
-            
-            let shaderData = { lightingData: g_lightingData};
-            objects.foreach(object => object.renderer.drawModel(object, g_camera, shaderData))
+            //objects.forEach(update());
+            if (objects !== undefined) {
+                for (let i = 0; i < objects.length; i++) {
+                    let currentObject = objects[i];
+                    currentObject.update();
+                }
+
+                let shaderData = { lightingData: g_lightingData};
+                objects.forEach(object => object.renderer.drawModel(object, g_camera, shaderData))
+            }
 
             // draws grid
             g_grid.draw(g_camera);
