@@ -169,7 +169,7 @@
             g_cameraController.target.set(0,0,0);
 
             music = new Howl({
-                src: ['Lifelike.mp3'],
+                src: ['../resources/sounds/Lifelike.mp3'],
                 html5: true // use streaming audio if possible
             });
             music.play();
@@ -199,7 +199,7 @@
 
             //Define materials
 
-            GLUtils.loadTexture("bunny", "bunny.jpg");
+            GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
             let bunnyMat = {
                 tint: new V3(1,1,1),
                 shininess: 10, 
@@ -207,7 +207,7 @@
                 mainTexture: "bunny"
             };
 
-            let bunny = {name: "bunny", material: bunnyMat, meshName: "bunnyMesh", position: [0,0,0], scale: [1,1,1], meshLocation: "bunny.obj", renderer: g_renderer, primitive: "no"}
+            let bunny = {name: "bunny", material: bunnyMat, meshName: "bunnyMesh", position: [0,0,0], scale: [1,1,1], meshLocation: "../resources/models/bunny.obj", renderer: g_renderer, primitive: "no"}
 
             addObject(bunny);
 
@@ -240,8 +240,6 @@
                                             g_lightingData.ambientColorG,
                                             g_lightingData.ambientColorB);
             shaderData.lightingData = lightingData;
-            console.log(shaderData.lightingData);
-            
         }
 
         function draw(deltaTime, objects){
