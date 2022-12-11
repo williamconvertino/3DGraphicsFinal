@@ -66,7 +66,7 @@
         // dat.gui to mute/unmute our sound
         var gui = new dat.GUI();
 
-        var debugMode = false;
+        var debugMode = true;
         //---------------------Lighting testing (Maybe remove later)---------------------------------
         var g_lightingData = {
             lightDirX: -1,
@@ -208,6 +208,7 @@
             GLUtils.loadTexture("grass", "../resources/textures/grass.png");
             GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
             GLUtils.loadTexture("beef", "../resources/textures/beef.png");
+            GLUtils.loadTexture("solar", "../resources/textures/solar.png");
 
             //Load models
 
@@ -240,10 +241,10 @@
             }
 
             let lanternMat = {
-                tint: new V3(1.0,0.5,0.3),
+                tint: new V3(1.0,1.0,1.0),
                 shininess: 10,
-                specularIntensity: 100,
-                mainTexture: "grass"
+                specularIntensity: 0.2,
+                mainTexture: "solar"
             }
 
             let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
