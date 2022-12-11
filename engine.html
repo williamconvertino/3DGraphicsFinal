@@ -2,32 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>WebGL Music Animation</title>
+    <title>WebGL Texturing</title>
 </head>
 <body>
-	<canvas width="0" height="0" id="webgl-canvas"></canvas>
+	<canvas width="500" height="500" id="webgl-canvas"></canvas>
 
     <script src="../common/webgl-debug.js"></script>
+    <script src="../common/webgl-lint.js"></script>
     <script src="../common/math.js"></script>
     <script src="../common/gl-utils.js"></script>
     <script src="../common/input.js"></script>
     <script src="../common/renderloop.js"></script>
     <script src="../common/camera.js"></script>
     <script src="../common/grid.js"></script>
-    <script src="../common/objparser.js"></script>
     <script src="../common/dat.gui.min.js"></script>
     <script src="../common/stats.min.js"></script>
+    <script src="../common/objparser.js"></script>
 
     <script src="renderer.js"></script>
     <script src="modeltransform.js"></script>
     <script src="primitives.js"></script>
-
-    <script src="howler.js"></script>
-
-    <button id="startbutton" width="300" height="300" onclick="load()" style="
-        background-color: #111111; border: none; color: white; padding: 50px 50px; text-align: center;
-        text-decoration: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        font-size: 50px;">Click here to start the animation</button>
 
     <script type="text/javascript">
         "use strict"; // use strict javascript compiling
@@ -45,14 +39,10 @@
         var canvas;
         var renderLoop;
 
-        var g_renderer;
-
         var g_camera;
         var g_cameraController;
 
-        var skeleton;
-
-        var g_grid
+        var objects;
 
         var timer = 0;
         var music;
@@ -62,20 +52,35 @@
         var gui = new dat.GUI({ width: 100 } );
         gui.add(gui_data, "mute").onChange(function(value){music?.mute(value);});
 
+
+        let bpm = 101; // Lifelike by Porter Robinson has 101 BPM
+        let bps = bpm/60.0; // this many beats per second
+        let beatDuration = 1.0/bps; // one beat lasts this long
+
+        var g_grid;
+
+        var g_renderer;
+
         // lighting
         var g_lightingData = {
-            // TODO: Add lighting data
+            directionalLight: new V3(-0.2, -0.5, -0.5).normalize(), // light direction
+            directionalColor: new V3(1.0, 1.0, 1.0), // light color by default white
+            ambientColor: new V3(0.2, 0.2, 0.2) // dark gray
         }
+
+        // This will execute the setup function once the whole document has been loaded.
+        window.addEventListener("load",function(){
+            setup();
+        });
 
         function setup(){
             canvas = document.getElementById("webgl-canvas");
-            gl = GLUtils.createWebGLInstance(canvas, true);
+            gl = GLUtils.createWebGLInstance(canvas, true, true); // fullscreen = true, debugging = true
             gl.clearColor(0.85, 0.95, 0.9, 1); // set clear color (RGBA)
             gl.fitScreen();
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
 
-            Input.initialize(canvas);
             // our shader files are loaded here. Once completed, init is called
             // for now there is only the standardShader, but you can add more by
             // simply adding another path into the array shaderPaths.
@@ -83,22 +88,79 @@
             GLUtils.loadShaders(shaderPaths, init);
         }
 
+        function addObject(name, renderer, scale, position, textureName, textureLocation, meshName, meshLocation, primitive){
+            var thisObject;
+            thisObject.name = name;
+            thisObject.renderer = renderer;
+            thisObject.scale = scale;
+            thisObject.position = position;
+
+            // if the object is a primitive (which is when the primitive variable exists), set it to the appropriate primitive mesh
+            if (primitive == 'no') {
+                let thisMesh = Primitives.primitive.getMesh();
+            }
+            // if the object is not a primitive, load its obj file for the mesh
+            else {
+                let thisMesh = OBJLoader.getMesh(meshName, meshLocation);
+            }
+
+            let thisMesh = OBJLoader.getMesh(meshName, meshLocation);
+
+            GLUtils.loadsTexture(textureName, textureLocation);
+            let thisMat = { tint: new V3(1,1,1), mainTexture:textureName}
+            thisObject.mat = thisMat;
+
+            thisObject = new ModelTransform(thisMesh, thisMat);
+            thisObject.position.set = position;
+            thisObject.scale.set = scale;
+            objects.push(thisObject);
+        }
+
         function init(){
+            Input.initialize(canvas);
+
             g_renderer = new Renderer("standardShader");
 
             g_camera = new PerspectiveCamera(45, 0.1, 1000, canvas.width / canvas.height);
             g_cameraController = new OrbiterCameraController(canvas, g_camera);
-            g_cameraController.target.set(0,1.5,0);
+            g_cameraController.target.set(0,0,0);
 
-            // TODO: Load textures and add to materials
+            //TODO: load texture from ressources folder to TextureCache
+            //GLUtils.loadTexture("uv-test", "ressources/uv-test.png");
+            //GLUtils.loadTexture("bunnyMat", "ressources/bunny.jpg");
+            //GLUtils.loadTexture("sand", "ressources/text1.png");
+            //GLUtils.loadTexture("wall-pyramid", "ressources/text2.jpg");
+            //TODO: add mainTexture property with loaded texture to material
+            
+            // Material with white tint color
+            
+            //let bunnyMesh = OBJLoader.getMesh("bunnyMesh", "ressources/bunny.obj");
+            //let bunnyMat = {tint: new V3(1,1,1), mainTexture: "bunnyMat"};
+            
 
-            let material = {tint: new V3(1,1,1)};
+            //let uvSandMat = { tint: new V3(1,1,1), mainTexture:"sand"}
+            //let uvPyramidMat = { tint: new V3(1,1,1), mainTexture: "wall-pyramid"};
+            
+            //bunny = new ModelTransform(bunnyMesh, bunnyMat);
+            //pyramid = new ModelTransform(Primitives.Pyramid.getMesh(), uvPyramidMat);
+            //sand = new ModelTransform(Primitives.Quad.getMesh(), uvSandMat);
+            //sphere = new ModelTransform(Primitives.Sphere.getMesh(), uvTestMat);
+            //cylinder = new ModelTransform(Primitives.Cylinder.getMesh(), uvTestMat);
+            //pyramid = new ModelTransform(Primitives.Pyramid.getMesh(), uvTestMat);
+            //cube = new ModelTransform(Primitives.Cube.getMesh(), uvTestMat);
+            //quad = new ModelTransform(Primitives.Quad.getMesh(), uvTestMat);
+    
 
-            skeleton = new ModelTransform(OBJLoader.getMesh("skeleton", "ressources/skeleton.obj"), material);
+            //sphere.position.set(1.5,0,-1.5);
+            //cylinder.position.set(-1.5,0,-1.5);
+            //cube.position.set(1.5,0,1.5);
+            //quad.position.set(-1.5,0,1.5);
+            //bunny.position.set(0.0, 2.0, 0.0);
+            //pyramid.position.set(0,0.01,0);
+            //sand.scale.set(5.0,5.0,5.0);
+            //sand.rotation.set(-90.0, 0.0, 0.0);
 
-            g_grid = new GridAxis();
-
-            // load an play the music using howler.js
+                        // load an play the music using howler.js
             // https://howlerjs.com/
             // documentation: https://github.com/goldfire/howler.js#documentation
             music = new Howl({
@@ -108,15 +170,15 @@
             music.play();
             music.mute(gui_data.mute);
 
+            addObject("bunny", g_renderer, [1,1,1], [0,0,0], "bunnyMat", "ressources/bunny.jpg", "bunnyMesh", "ressources/bunny.obj", "no");
+
+            g_grid = new GridAxis();
+
             renderLoop = new RenderLoop(draw).start();
         }
 
-        function draw(deltaTime){
+        function draw(deltaTime, objects){
             Input.update();
-
-            let bpm = 77; // the skeleton song has 77 beats per minute
-            let bps = bpm/60.0; // this many beats per second
-            let beatDuration = 1.0/bps; // one beat lasts this long
 
             timer += deltaTime; // count up timer variable
             if(timer > beatDuration){ // do stuff every beat
@@ -130,26 +192,17 @@
                 let b = Math.random();
                 gl.clearColor(r, g, b, 1); // set clear color (RGBA)
             }
-
+            
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             g_cameraController.update();
 
-            // scale y by 0.1 up and down bps times a second.
-            skeleton.scale.y = 1 + Math.sin((Time.time * Math.PI * 2) * bps) * 0.1;
-            skeleton.update();
-
+            objects.foreach(object => object.update())
+            
             let shaderData = { lightingData: g_lightingData};
+            objects.foreach(object => object.renderer.drawModel(object, g_camera, shaderData))
 
-            g_renderer.drawModel(skeleton, g_camera, shaderData);
-
+            // draws grid
             g_grid.draw(g_camera);
-        }
-
-        // this will be executed when the startbutton is pressed, run the program and delete the button
-        function load(){
-            var button = document.getElementById("startbutton");
-            button.remove();
-            setup();
         }
     </script>
 </body>
