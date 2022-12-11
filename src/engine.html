@@ -138,23 +138,31 @@
             let shaderPaths = ["shaders/directionalAndPointShader.glsl"];
             GLUtils.loadShaders(shaderPaths, init);
         }
+        
+        function addGrass(size) {
+            let step = 1.0;
+
+            let grassMesh = Primitives.Pyramid.getMesh();
+
+            let grassMat = {
+                tint: new V3(1,1,1),
+                shininess: 10, 
+                specularIntensity: 0.2,
+                mainTexture: "grass"
+            };
+
+            for (let x = -size/2.0; x < size/2.0; x += step) {
+                for (let y = -size/2.0; y < size/2.0; y += step) {
+                    let currentGrass = {name: "grass", material: grassMat, mesh: grassMesh, position: [0,0,0], scale: [0.1,0.1,0.1], renderer: g_renderer}
+                    addObject(currentGrass);            
+                }
+            }
+        }
 
         function addObject(object){
-
-            // if the object is a primitive (which is when the primitive variable exists), set it to the appropriate primitive mesh
-            if (object.primitive !== 'no') {
-                let thisMesh = Primitives[object.primitive].getMesh();
-            }
-            // if the object is not a primitive, load its obj file for the mesh
-            else {
-                let thisMesh = OBJLoader.getMesh(object.meshName, object.meshLocation);
-            }
-
-            let thisMesh = OBJLoader.getMesh(object.meshName, object.meshLocation);
-
-            let transform = new ModelTransform(thisMesh, object.material);
-            transform.position.set = object.position;
-            transform.scale.set = object.scale;
+            let transform = new ModelTransform(object.mesh, object.material);
+            transform.position.set(object.position[0], object.position[1], object.position[2]);
+            transform.scale.set(object.scale[0],object.scale[1], object.scale[2]);
             object.transform = transform;
             objects.push(object);
         }
@@ -197,9 +205,18 @@
             shaderData.lightingData = lightingData;
 
 
+            //Load textures
+            
+            GLUtils.loadTexture("grass", "../resources/textures/grass.png");
+            GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
+
+            //Load models
+
+            let bunnyMesh = OBJLoader.getMesh("bunny","../resources/models/bunny.obj");
+
+
             //Define materials
 
-            GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
             let bunnyMat = {
                 tint: new V3(1,1,1),
                 shininess: 10, 
@@ -207,15 +224,18 @@
                 mainTexture: "bunny"
             };
 
-            let bunny = {name: "bunny", material: bunnyMat, meshName: "bunnyMesh", position: [0,0,0], scale: [1,1,1], meshLocation: "../resources/models/bunny.obj", renderer: g_renderer, primitive: "no"}
+            let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], renderer: g_renderer}
 
-            addObject(bunny);
+            //addObject(bunny);
+            addGrass(4.0);
 
             g_grid = new GridAxis();
 
             
             renderLoop = new RenderLoop((deltaTime) => draw(deltaTime, objects)).start();
         }
+
+        
 
         function doTestLighting() {
 
