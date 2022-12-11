@@ -21,15 +21,16 @@
 
     <script src="renderer.js"></script>
     <script src="directionalAndPointRenderer.js"></script>
+    <script src="simpleGrassRenderer.js"></script>
     <script src="modeltransform.js"></script>
     <script src="primitives.js"></script>
 
     <script src="howler.js"></script>
 
-    <button id="startbutton" width="300" height="300" onclick="load()" style="
+    <!-- <button id="startbutton" width="300" height="300" onclick="load()" style="
     background-color: #111111; border: none; color: white; padding: 50px 50px; text-align: center;
     text-decoration: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 50px;">Click here to start the animation</button>
+    font-size: 50px;">Click here to start the animation</button> -->
 
 
     <link rel="shortcut icon" href="#">
@@ -58,7 +59,7 @@
         var timer = 0;
         var music;
 
-        var shaderData = {}
+        var g_shaderData = {}
         var lightingData = {}
 
         // dat.gui to mute/unmute our sound
@@ -135,26 +136,17 @@
             // our shader files are loaded here. Once completed, init is called
             // for now there is only the standardShader, but you can add more by
             // simply adding another path into the array shaderPaths.
-            let shaderPaths = ["shaders/directionalAndPointShader.glsl"];
+            let shaderPaths = ["shaders/directionalAndPointShader.glsl", "shaders/simpleGrassShader.glsl"];
             GLUtils.loadShaders(shaderPaths, init);
         }
         
-        function addGrass(size) {
+        function addGrass(size, grassMesh, grassMat) {
             let step = 1.0;
-
-            let grassMesh = Primitives.Pyramid.getMesh();
-
-            let grassMat = {
-                tint: new V3(1,1,1),
-                shininess: 10, 
-                specularIntensity: 0.2,
-                mainTexture: "grass"
-            };
 
             for (let x = -size/2.0; x < size/2.0; x += step) {
                 for (let y = -size/2.0; y < size/2.0; y += step) {
-                    let currentGrass = {name: "grass", material: grassMat, mesh: grassMesh, position: [0,0,0], scale: [0.1,0.1,0.1], renderer: g_renderer}
-                    addObject(currentGrass);            
+                    let currentGrass = {name: "grass", material: grassMat, mesh: grassMesh, position: [x,0,y], scale: [.5,0.5,0.5], renderer: g_renderer}
+                    addObject(currentGrass);                     
                 }
             }
         }
@@ -171,6 +163,7 @@
             Input.initialize(canvas);
 
             g_renderer = new DirectionalAndPointRenderer("directionalAndPointShader");
+            let grassRenderer = new SimpleGrassRenderer("simpleGrassShader");
             
             g_camera = new PerspectiveCamera(45, 0.1, 1000, canvas.width / canvas.height);
             g_cameraController = new OrbiterCameraController(canvas, g_camera);
@@ -202,7 +195,7 @@
             lightingData.pointColor = new V3(1,
             1,
             1);
-            shaderData.lightingData = lightingData;
+            g_shaderData.lightingData = lightingData;
 
 
             //Load textures
@@ -212,11 +205,11 @@
 
             //Load models
 
-            let bunnyMesh = OBJLoader.getMesh("bunny","../resources/models/bunny.obj");
-
+            let bunnyMesh = OBJLoader.getMesh("bunny","../resources/models/bunny.obj");                        
+            let grassMesh = OBJLoader.getMesh("grass","../resources/models/grass.obj");   
 
             //Define materials
-
+        
             let bunnyMat = {
                 tint: new V3(1,1,1),
                 shininess: 10, 
@@ -224,15 +217,36 @@
                 mainTexture: "bunny"
             };
 
-            let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], renderer: g_renderer}
+            let grassMat = {
+                tint: new V3(1,1,1),
+                shininess: 10, 
+                specularIntensity: 0.2,
+                mainTexture: "grass"
+            };
 
-            //addObject(bunny);
-            addGrass(4.0);
+            //Shader data (non-default)
+
+            let grassShaderData = {
+                height: 1.0,
+                grassBottom: 0.0,
+                waveDistance: 1.0,
+                time: 0,
+                uv: [1,2]
+            }
+
+            let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], renderer: g_renderer, shaderData: g_shaderData}
+            
+            //let grass = {name: "grass", material: grassMat, mesh: grassMesh, position: [0,0,0], scale: [.01,.01,.01], renderer: g_renderer}
+            //Grass
+            for (let x = -1; x < 1; x += 0.1) {
+                for (let y = -1; y < 1; y += 0.1) {
+                    addObject({name: "grass_" + x + "_" + y, material: grassMat, mesh: grassMesh, position: [x,0,y], scale: [.01,.01,.01], renderer: grassRenderer, shaderData: grassShaderData});
+                }   
+            }
 
             g_grid = new GridAxis();
-
             
-            renderLoop = new RenderLoop((deltaTime) => draw(deltaTime, objects)).start();
+            renderLoop = new RenderLoop(draw).start();
         }
 
         
@@ -259,10 +273,10 @@
             lightingData.ambientColor = new V3(g_lightingData.ambientColorR,
                                             g_lightingData.ambientColorG,
                                             g_lightingData.ambientColorB);
-            shaderData.lightingData = lightingData;
+            g_shaderData.lightingData = lightingData;
         }
 
-        function draw(deltaTime, objects){
+        function draw(deltaTime){
             Input.update();
             
             //---TEST LIGHTING (will override other lighting)
@@ -288,15 +302,11 @@
             g_cameraController.update();
 
             //objects.forEach(update());
-            if (objects !== undefined) {
 
-                for (let i = 0; i < objects.length; i++) {
-                    let currentObject = objects[i];
-                    currentObject.transform.update();
-                    currentObject.renderer.drawModel(currentObject.transform, g_camera, shaderData);
-                }
-
-            }
+            objects.forEach(currentObject => {
+                currentObject.transform.update();
+                currentObject.renderer.drawModel(currentObject.transform, g_camera, currentObject.shaderData);
+            });
 
             // draws grid
             g_grid.draw(g_camera);
