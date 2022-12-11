@@ -64,6 +64,7 @@
         // dat.gui to mute/unmute our sound
         var gui = new dat.GUI();
 
+        var debugMode = true;
         //---------------------Lighting testing (Maybe remove later)---------------------------------
         var g_lightingData = {
             lightDirX: -1,
@@ -83,8 +84,7 @@
             ambientColorB: 0.1
         }
 
-        // magical dat.gui stuff that connects the lighting values to the
-        // user interface on the top right
+        if (debugMode) {
         gui.add(g_lightingData, "lightDirX", -10.0, 10.0);
         gui.add(g_lightingData, "lightDirY", -10.0, 10.0);
         gui.add(g_lightingData, "lightDirZ", -10.0, 10.0);
@@ -102,6 +102,8 @@
         gui.add(g_lightingData, "ambientColorR", 0.0, 1.0);
         gui.add(g_lightingData, "ambientColorG", 0.0, 1.0);
         gui.add(g_lightingData, "ambientColorB", 0.0, 1.0);
+        }
+        
         //-------------------------------------------------------------------------------------------------
 
 
@@ -246,7 +248,9 @@
             Input.update();
             
             //---TEST LIGHTING (will override other lighting)
-            doTestLighting();
+            if (debugMode) {
+                doTestLighting();
+            }
             //------END TEST LIGHTING--
 
             timer += deltaTime; // count up timer variable
