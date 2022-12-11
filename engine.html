@@ -84,7 +84,7 @@
             // our shader files are loaded here. Once completed, init is called
             // for now there is only the standardShader, but you can add more by
             // simply adding another path into the array shaderPaths.
-            let shaderPaths = ["shaders/standardShader.glsl"];
+            let shaderPaths = ["shaders/directionalAndPointShader.glsl"];
             GLUtils.loadShaders(shaderPaths, init);
         }
 
@@ -119,7 +119,7 @@
         function init(){
             Input.initialize(canvas);
 
-            g_renderer = new Renderer("standardShader");
+            g_renderer = new directionalAndPointRenderer("directionalAndPointShader");
 
             g_camera = new PerspectiveCamera(45, 0.1, 1000, canvas.width / canvas.height);
             g_cameraController = new OrbiterCameraController(canvas, g_camera);
