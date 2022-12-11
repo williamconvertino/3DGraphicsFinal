@@ -142,7 +142,7 @@
         
             lightingData = {
                 directionalLight: new V3(-0.2, -0.5, -0.5).normalize(), // light direction
-                directionalColor: new V3(1.0, 1.0, 1.0), // light color by default white
+                directionalColor: new V3(0.5, 1.0, 1.0), // light color by default white
                 ambientColor: new V3(0.2, 0.2, 0.2) // dark gray
             }
 
@@ -157,10 +157,6 @@
             lightingData.pointColor = new V3(1,
             1,
             1);
-
-            lightingData.ambientColor = new V3(1,
-                                            1,
-                                            1);
             shaderData.lightingData = lightingData;
             
 
@@ -168,7 +164,7 @@
 
             GLUtils.loadTexture("bunny", "bunny.jpg");
             let bunnyMat = {
-                tint: new V3(0.33,0.49,0.27),
+                tint: new V3(1,1,1),
                 shininess: 10, 
                 specularIntensity: 0.2,
                 mainTexture: "bunny"
