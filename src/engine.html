@@ -194,10 +194,10 @@
                                         // but maybe 0.98 or 1.01.
                                         // Since we work with sound and want a consistent event at exact intervals,
                                         // we have to use the Time.time to decide when to act.
-                let r = Math.random();
-                let g = Math.random();
-                let b = Math.random();
-                gl.clearColor(r, g, b, 1); // set clear color (RGBA)
+                //let r = Math.random();
+                //let g = Math.random();
+                //let b = Math.random();
+                //gl.clearColor(r, g, b, 1); // set clear color (RGBA)
             }
             
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -216,6 +216,13 @@
 
             // draws grid
             g_grid.draw(g_camera);
+        }
+
+        // this will be executed when the startbutton is pressed, run the program and delete the button
+        function load(){
+            var button = document.getElementById("startbutton");
+            button.remove();
+            setup();
         }
     </script>
 </body>
