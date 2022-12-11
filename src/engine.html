@@ -22,6 +22,7 @@
     <script src="renderer.js"></script>
     <script src="directionalAndPointRenderer.js"></script>
     <script src="simpleGrassRenderer.js"></script>
+    <script src="grassRenderer.js"></script>
     <script src="modeltransform.js"></script>
     <script src="primitives.js"></script>
 
@@ -65,7 +66,7 @@
         // dat.gui to mute/unmute our sound
         var gui = new dat.GUI();
 
-        var debugMode = true;
+        var debugMode = false;
         //---------------------Lighting testing (Maybe remove later)---------------------------------
         var g_lightingData = {
             lightDirX: -1,
@@ -138,7 +139,7 @@
             // our shader files are loaded here. Once completed, init is called
             // for now there is only the standardShader, but you can add more by
             // simply adding another path into the array shaderPaths.
-            let shaderPaths = ["shaders/directionalAndPointShader.glsl", "shaders/simpleGrassShader.glsl"];
+            let shaderPaths = ["shaders/directionalAndPointShader.glsl", "shaders/simpleGrassShader.glsl", "shaders/grassShader.glsl"];
             GLUtils.loadShaders(shaderPaths, init);
         }
         
@@ -157,6 +158,7 @@
             let transform = new ModelTransform(object.mesh, object.material);
             transform.position.set(object.position[0], object.position[1], object.position[2]);
             transform.scale.set(object.scale[0],object.scale[1], object.scale[2]);
+            transform.rotation.set(object.rotation[0], object.rotation[1], object.rotation[2]);
             object.transform = transform;
             objects.push(object);
         }
@@ -165,7 +167,8 @@
             Input.initialize(canvas);
 
             g_renderer = new DirectionalAndPointRenderer("directionalAndPointShader");
-            let grassRenderer = new SimpleGrassRenderer("simpleGrassShader");
+            let simpleGrassRenderer = new SimpleGrassRenderer("simpleGrassShader");
+            let grassRenderer = new GrassRenderer("grassShader");
             
             g_camera = new PerspectiveCamera(45, 0.1, 1000, canvas.width / canvas.height);
             g_cameraController = new OrbiterCameraController(canvas, g_camera);
@@ -182,7 +185,7 @@
         
             lightingData = {
                 directionalLight: new V3(-0.2, -0.5, -0.5).normalize(), // light direction
-                directionalColor: new V3(0.5, 1.0, 1.0), // light color by default white
+                directionalColor: new V3(0.0, 0.0, 0.0), // light color by default white
                 ambientColor: new V3(0.2, 0.2, 0.2) // dark gray
             }
 
@@ -204,11 +207,14 @@
             
             GLUtils.loadTexture("grass", "../resources/textures/grass.png");
             GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
+            GLUtils.loadTexture("beef", "../resources/textures/beef.png");
 
             //Load models
 
             let bunnyMesh = OBJLoader.getMesh("bunny","../resources/models/bunny.obj");                        
             let grassMesh = OBJLoader.getMesh("grass","../resources/models/grass.obj");   
+            let beefMesh = OBJLoader.getMesh("beef","../resources/models/beef.obj");   
+            let lanternMesh = OBJLoader.getMesh("lantern","../resources/models/lantern.obj");   
 
             //Define materials
         
@@ -226,17 +232,37 @@
                 mainTexture: "grass"
             };
 
+            let beefMat = {
+                tint: new V3(1,1,1),
+                shininess: 15, 
+                specularIntensity: 0.2,
+                mainTexture: "beef"
+            }
 
+            let lanternMat = {
+                tint: new V3(1.0,0.5,0.3),
+                shininess: 10,
+                specularIntensity: 100,
+                mainTexture: "grass"
+            }
 
-            let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], renderer: g_renderer, shaderData: g_shaderData}
+            let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
             
+            let beef = {name: "beef", material: beefMat, mesh: beefMesh, position: [0,0,0], scale: [0.1,0.1,0.1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
+            addObject(beef)
+
+            let lanternPosition = [-0.55,0.65,0.85];
+            g_shaderData.lightingData.pointPosition = new V3(lanternPosition[0], lanternPosition[1] - 0.5, lanternPosition[2]);
+            let lantern = {name: "lantern", material: lanternMat, mesh: lanternMesh, position: lanternPosition, scale: [0.1,0.1,0.1], rotation: [0,-90,0], renderer: g_renderer, shaderData: g_shaderData}
+            addObject(lantern)
+
             //let grass = {name: "grass", material: grassMat, mesh: grassMesh, position: [0,0,0], scale: [.01,.01,.01], renderer: g_renderer}
             //Grass
-            let totalGrass = 200;
+            let totalGrass = 40;
             let halfRoot = Math.pow(totalGrass, 0.5)/2.0;
             let invHalfRoot = 1.0/halfRoot;
             
-            let offsetScale = 0.1; 
+            let offsetScale = 0.3; 
 
             for (let x = -1; x <= 1; x += invHalfRoot) {
                 for (let y = -1; y <= 1; y += invHalfRoot) {
@@ -251,7 +277,10 @@
                         time: 0,
                         uv: [x,y]
                     }
-                    addObject({name: "grass_" + x + "_" + y, material: grassMat, mesh: grassMesh, position: [x + xOffset ,0,y + yOffset], scale: [.01,.01,.01], renderer: grassRenderer, shaderData: grassShaderData});
+                    Object.keys(g_shaderData).forEach(entry => {
+                        grassShaderData[entry] = g_shaderData[entry];
+                    });
+                    addObject({name: "grass_" + x + "_" + y, material: grassMat, mesh: grassMesh, position: [x + xOffset ,0,y + yOffset], scale: [.01,.01,.01], rotation: [0,0,0], renderer: grassRenderer, shaderData: grassShaderData});
                 }   
             }
 
