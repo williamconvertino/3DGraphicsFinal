@@ -53,7 +53,7 @@ void main() {
     float relativeHeight = a_position - u_grassBottom;
     float centerHeight = u_height / 2.0;
     if (relativeHeight > centerHeight) {
-        finalPosition.x += sin((u_time / 500.0), + (uv.x * u_waveDistance)) * (relativeHeight - centerHeight);
+        finalPosition.x += sin((u_time / 500.0) + (uv.x * u_waveDistance)) * (relativeHeight - centerHeight);
     }
 
     //Calculate vertex position

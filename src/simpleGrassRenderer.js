@@ -38,12 +38,16 @@ class SimpleGrassRenderer extends Renderer {
         let waveDistanceLoc = gl.getUniformLocation(this.program, "u_waveDistance");
         gl.uniform1f(waveDistanceLoc, shaderData.waveDistance);
         
+        let waveSpeedLoc = gl.getUniformLocation(this.program, "u_waveSpeed");
+        gl.uniform1f(waveSpeedLoc, shaderData.waveSpeed);
+
         let timeLoc = gl.getUniformLocation(this.program, "u_time");
         gl.uniform1f(timeLoc, shaderData.time);
         
         let uvLoc = gl.getUniformLocation(this.program, "u_uv");
         gl.uniform2fv(uvLoc, shaderData.uv);
         
+            
 
     }
 }
