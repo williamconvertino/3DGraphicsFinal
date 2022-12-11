@@ -64,6 +64,7 @@
         // dat.gui to mute/unmute our sound
         var gui = new dat.GUI();
 
+        var debugMode = true;
         //---------------------Lighting testing (Maybe remove later)---------------------------------
         var g_lightingData = {
             lightDirX: -1,
@@ -83,8 +84,7 @@
             ambientColorB: 0.1
         }
 
-        // magical dat.gui stuff that connects the lighting values to the
-        // user interface on the top right
+        if (debugMode) {
         gui.add(g_lightingData, "lightDirX", -10.0, 10.0);
         gui.add(g_lightingData, "lightDirY", -10.0, 10.0);
         gui.add(g_lightingData, "lightDirZ", -10.0, 10.0);
@@ -102,6 +102,8 @@
         gui.add(g_lightingData, "ambientColorR", 0.0, 1.0);
         gui.add(g_lightingData, "ambientColorG", 0.0, 1.0);
         gui.add(g_lightingData, "ambientColorB", 0.0, 1.0);
+        }
+        
         //-------------------------------------------------------------------------------------------------
 
 
@@ -167,7 +169,7 @@
             g_cameraController.target.set(0,0,0);
 
             music = new Howl({
-                src: ['Lifelike.mp3'],
+                src: ['../resources/sounds/Lifelike.mp3'],
                 html5: true // use streaming audio if possible
             });
             music.play();
@@ -197,7 +199,7 @@
 
             //Define materials
 
-            GLUtils.loadTexture("bunny", "bunny.jpg");
+            GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
             let bunnyMat = {
                 tint: new V3(1,1,1),
                 shininess: 10, 
@@ -205,7 +207,7 @@
                 mainTexture: "bunny"
             };
 
-            let bunny = {name: "bunny", material: bunnyMat, meshName: "bunnyMesh", position: [0,0,0], scale: [1,1,1], meshLocation: "bunny.obj", renderer: g_renderer, primitive: "no"}
+            let bunny = {name: "bunny", material: bunnyMat, meshName: "bunnyMesh", position: [0,0,0], scale: [1,1,1], meshLocation: "../resources/models/bunny.obj", renderer: g_renderer, primitive: "no"}
 
             addObject(bunny);
 
@@ -238,15 +240,15 @@
                                             g_lightingData.ambientColorG,
                                             g_lightingData.ambientColorB);
             shaderData.lightingData = lightingData;
-            console.log(shaderData.lightingData);
-            
         }
 
         function draw(deltaTime, objects){
             Input.update();
             
             //---TEST LIGHTING (will override other lighting)
-            doTestLighting();
+            if (debugMode) {
+                doTestLighting();
+            }
             //------END TEST LIGHTING--
 
             timer += deltaTime; // count up timer variable
