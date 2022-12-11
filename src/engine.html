@@ -115,59 +115,22 @@
             GLUtils.loadTexture(object.textureName, object.textureLocation);
             let thisMat = { tint: new V3(1,1,1), mainTexture:object.textureName}
 
-            let thisObject = new ModelTransform(thisMesh, thisMat);
-            thisObject.position.set = object.position;
-            thisObject.scale.set = object.scale;
-            objects.push(thisObject);
+            let transform = new ModelTransform(thisMesh, thisMat);
+            transform.position.set = object.position;
+            transform.scale.set = object.scale;
+            object.transform = transform;
+            objects.push(object);
         }
 
         function init(){
             Input.initialize(canvas);
 
             g_renderer = new DirectionalAndPointRenderer("directionalAndPointShader");
-
+            
             g_camera = new PerspectiveCamera(45, 0.1, 1000, canvas.width / canvas.height);
             g_cameraController = new OrbiterCameraController(canvas, g_camera);
             g_cameraController.target.set(0,0,0);
 
-            //TODO: load texture from ressources folder to TextureCache
-            //GLUtils.loadTexture("uv-test", "ressources/uv-test.png");
-            //GLUtils.loadTexture("bunnyMat", "ressources/bunny.jpg");
-            //GLUtils.loadTexture("sand", "ressources/text1.png");
-            //GLUtils.loadTexture("wall-pyramid", "ressources/text2.jpg");
-            //TODO: add mainTexture property with loaded texture to material
-            
-            // Material with white tint color
-            
-            //let bunnyMesh = OBJLoader.getMesh("bunnyMesh", "ressources/bunny.obj");
-            //let bunnyMat = {tint: new V3(1,1,1), mainTexture: "bunnyMat"};
-            
-
-            //let uvSandMat = { tint: new V3(1,1,1), mainTexture:"sand"}
-            //let uvPyramidMat = { tint: new V3(1,1,1), mainTexture: "wall-pyramid"};
-            
-            //bunny = new ModelTransform(bunnyMesh, bunnyMat);
-            //pyramid = new ModelTransform(Primitives.Pyramid.getMesh(), uvPyramidMat);
-            //sand = new ModelTransform(Primitives.Quad.getMesh(), uvSandMat);
-            //sphere = new ModelTransform(Primitives.Sphere.getMesh(), uvTestMat);
-            //cylinder = new ModelTransform(Primitives.Cylinder.getMesh(), uvTestMat);
-            //pyramid = new ModelTransform(Primitives.Pyramid.getMesh(), uvTestMat);
-            //cube = new ModelTransform(Primitives.Cube.getMesh(), uvTestMat);
-            //quad = new ModelTransform(Primitives.Quad.getMesh(), uvTestMat);
-    
-
-            //sphere.position.set(1.5,0,-1.5);
-            //cylinder.position.set(-1.5,0,-1.5);
-            //cube.position.set(1.5,0,1.5);
-            //quad.position.set(-1.5,0,1.5);
-            //bunny.position.set(0.0, 2.0, 0.0);
-            //pyramid.position.set(0,0.01,0);
-            //sand.scale.set(5.0,5.0,5.0);
-            //sand.rotation.set(-90.0, 0.0, 0.0);
-
-                        // load an play the music using howler.js
-            // https://howlerjs.com/
-            // documentation: https://github.com/goldfire/howler.js#documentation
             music = new Howl({
                 src: ['Lifelike.mp3'],
                 html5: true // use streaming audio if possible
@@ -175,12 +138,14 @@
             music.play();
             music.mute(gui_data.mute);
 
+            console.log(g_renderer);
             let bunny = {name: "bunny", renderer: g_renderer, scale: [1,1,1], position: [0,0,0], textureName: "bunnyMat", textureLocation: "bunny.jpg", meshName: "bunnyMesh", meshLocation: "bunny.obj", primitive: "no"}
 
             addObject(bunny);
 
             g_grid = new GridAxis();
 
+            
             renderLoop = new RenderLoop((deltaTime) => draw(deltaTime, objects)).start();
         }
 
@@ -205,14 +170,15 @@
 
             //objects.forEach(update());
             if (objects !== undefined) {
+                
+                let shaderData = { lightingData: g_lightingData};
+
                 for (let i = 0; i < objects.length; i++) {
                     let currentObject = objects[i];
-                    currentObject.update();
-
+                    currentObject.transform.update();
+                    currentObject.renderer.drawModel(currentObject, g_camera, shaderData);
                 }
 
-                let shaderData = { lightingData: g_lightingData};
-                objects.forEach(object => object.renderer.drawModel(object, g_camera, shaderData))
             }
 
             // draws grid
