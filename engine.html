@@ -20,6 +20,7 @@
     <script src="../common/objparser.js"></script>
 
     <script src="renderer.js"></script>
+    <script src="directionalAndPointRenderer.js"></script>
     <script src="modeltransform.js"></script>
     <script src="primitives.js"></script>
 
@@ -119,7 +120,7 @@
         function init(){
             Input.initialize(canvas);
 
-            g_renderer = new directionalAndPointRenderer("directionalAndPointShader");
+            g_renderer = new DirectionalAndPointRenderer("directionalAndPointShader");
 
             g_camera = new PerspectiveCamera(45, 0.1, 1000, canvas.width / canvas.height);
             g_cameraController = new OrbiterCameraController(canvas, g_camera);
