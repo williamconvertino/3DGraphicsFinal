@@ -31,6 +31,9 @@
     text-decoration: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-size: 50px;">Click here to start the animation</button>
 
+
+    <link rel="shortcut icon" href="#">
+
     <script type="text/javascript">
         "use strict"; // use strict javascript compiling
 
@@ -172,13 +175,13 @@
             music.play();
             music.mute(gui_data.mute);
 
-            let bunny = {name: "bunny", renderer: g_renderer, scale: [1,1,1], position: [0,0,0], textureName: "bunnyMat", textureLocation: "ressources/bunny.jpg", meshName: "bunnyMesh", meshLocation: "../resources/bunny.obj", primitive: "no"}
+            let bunny = {name: "bunny", renderer: g_renderer, scale: [1,1,1], position: [0,0,0], textureName: "bunnyMat", textureLocation: "bunny.jpg", meshName: "bunnyMesh", meshLocation: "bunny.obj", primitive: "no"}
 
             addObject(bunny);
 
             g_grid = new GridAxis();
 
-            renderLoop = new RenderLoop(draw(objects)).start();
+            renderLoop = new RenderLoop((deltaTime) => draw(deltaTime, objects)).start();
         }
 
         function draw(deltaTime, objects){
@@ -205,6 +208,7 @@
                 for (let i = 0; i < objects.length; i++) {
                     let currentObject = objects[i];
                     currentObject.update();
+
                 }
 
                 let shaderData = { lightingData: g_lightingData};
