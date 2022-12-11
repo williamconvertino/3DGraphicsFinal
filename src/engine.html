@@ -97,7 +97,7 @@
             thisObject.position = position;
 
             // if the object is a primitive (which is when the primitive variable exists), set it to the appropriate primitive mesh
-            if (primitive == 'no') {
+            if (primitive === 'no') {
                 let thisMesh = Primitives.primitive.getMesh();
             }
             // if the object is not a primitive, load its obj file for the mesh
