@@ -282,7 +282,9 @@ For example in Atom install atom-live-server package and start with Packages -> 
         };
         image.src = src;
         });
+        console.log("Loaded " + name);
         TextureCache[name] = texture;
         return texture;
         }
 }
+

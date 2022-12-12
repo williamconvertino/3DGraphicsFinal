@@ -11,6 +11,7 @@ class SimpleGrassRenderer extends Renderer {
         gl.enableVertexAttribArray(texcoordAttribLoc);
         gl.vertexAttribPointer(texcoordAttribLoc,2,gl.FLOAT,false,0,0);
 
+        
     }
 
     /**
