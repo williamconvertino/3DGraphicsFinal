@@ -20,8 +20,8 @@ uniform mat4 u_skyboxMatrix;
 
 void main() {
     
-    v_texCoord = (u_matrixV * u_matrixP * vec4 (a_position, 1)).xyz;
-    gl_Position =  vec4(a_position, 1.0);
+    v_texCoord = a_position;
+    gl_Position = u_matrixP * u_matrixV * vec4(a_position, 1.0);
 }
 
 #endif
@@ -37,7 +37,7 @@ varying vec3 v_texCoord;
 uniform samplerCube u_skyboxTex;
 
 void main(){
-    gl_FragColor = textureCube(u_skyboxTex, v_texCoord);
+    gl_FragColor = textureCube(u_skyboxTex, (v_texCoord));
 }
 
 #endif
