@@ -177,7 +177,7 @@ Primitives.Cube = class{
                         16, 17, 18, //Right
                         18, 19, 16,
 
-                        20, 21, 22, //left
+                        20, 21, 22, //leftmesh
                         22, 23, 20];
 
         MeshCache["cube"] = GLUtils.createMesh("cube", gl.TRIANGLES, indices, positions, normals, texcoords);

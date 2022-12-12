@@ -15,6 +15,10 @@ class SkyboxRenderer extends Renderer {
 
         let viewMatrix = camera.viewMatrix;
         let projectionMatrix = camera.projectionMatrix;
+        
+        let cameraPos = camera.getPosition();
+        let cameraPosLoc = gl.getUniformLocation(this.program, "u_cameraPos");
+        gl.uniform3fv(cameraPosLoc, cameraPos); 
 
         // set model, view and projection matrices in the vertex shader
         let modelMatrixLoc = gl.getUniformLocation(this.program, "u_matrixM");

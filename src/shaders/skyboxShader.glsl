@@ -18,10 +18,12 @@ uniform mat4 u_invMatrixM;
 
 uniform mat4 u_skyboxMatrix;
 
+uniform vec3 u_cameraPos;
+
 void main() {
     
     v_texCoord = a_position;
-    gl_Position = u_matrixP * u_matrixV * vec4(a_position, 1.0);
+    gl_Position = u_matrixP * u_matrixV * vec4(a_position + u_cameraPos, 1.0) ;//+ vec4(u_cameraPos, 1.0);
 }
 
 #endif
