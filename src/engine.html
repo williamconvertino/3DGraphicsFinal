@@ -142,17 +142,6 @@
             let shaderPaths = ["shaders/directionalAndPointShader.glsl", "shaders/simpleGrassShader.glsl", "shaders/grassShader.glsl"];
             GLUtils.loadShaders(shaderPaths, init);
         }
-        
-        function addGrass(size, grassMesh, grassMat) {
-            let step = 1.0;
-
-            for (let x = -size/2.0; x < size/2.0; x += step) {
-                for (let y = -size/2.0; y < size/2.0; y += step) {
-                    let currentGrass = {name: "grass", material: grassMat, mesh: grassMesh, position: [x,0,y], scale: [.5,0.5,0.5], renderer: g_renderer}
-                    addObject(currentGrass);                     
-                }
-            }
-        }
 
         function addObject(object){
             let transform = new ModelTransform(object.mesh, object.material);
@@ -250,16 +239,16 @@
             let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
             
             let beef = {name: "beef", material: beefMat, mesh: beefMesh, position: [0,0,0], scale: [0.1,0.1,0.1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
-            addObject(beef)
+            //addObject(beef)
 
             let lanternPosition = [-0.55,0.65,0.85];
             g_shaderData.lightingData.pointPosition = new V3(lanternPosition[0], lanternPosition[1] - 0.5, lanternPosition[2]);
             let lantern = {name: "lantern", material: lanternMat, mesh: lanternMesh, position: lanternPosition, scale: [0.1,0.1,0.1], rotation: [0,-90,0], renderer: g_renderer, shaderData: g_shaderData}
-            addObject(lantern)
+            //addObject(lantern)
 
             //let grass = {name: "grass", material: grassMat, mesh: grassMesh, position: [0,0,0], scale: [.01,.01,.01], renderer: g_renderer}
             //Grass
-            let totalGrass = 40;
+            let totalGrass = 50;
             let halfRoot = Math.pow(totalGrass, 0.5)/2.0;
             let invHalfRoot = 1.0/halfRoot;
             

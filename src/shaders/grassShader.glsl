@@ -28,7 +28,7 @@ attribute vec2 a_texcoord;
 varying vec2 v_texcoord;
 
 //Grass UV
-attribute vec2 u_uv;
+uniform vec2 u_uv;
 
 //Grass info
 uniform float u_height;
@@ -36,7 +36,6 @@ uniform float u_grassBottom;
 uniform float u_waveDistance;
 uniform float u_waveSpeed;
 uniform float u_time;
-
 
 void main() {
     
@@ -55,7 +54,7 @@ void main() {
     float centerHeight = u_height / 2.0;
     if (relativeHeight > centerHeight) {
         //finalPosition.x += sin((u_time / 500.0) + (u_uv.x * u_waveDistance)) * (relativeHeight - centerHeight);
-        finalPosition.x += sin(pow(u_time * u_waveSpeed, 0.8) + (u_uv.x * u_uv.y)) * u_waveDistance * ((relativeHeight - centerHeight)/u_height);
+        finalPosition.x += sin(pow(u_time * u_waveSpeed, 0.8) + (u_uv.x) + (0.2 * u_uv.y)) * u_waveDistance * ((relativeHeight - centerHeight)/u_height);
     }
 
     //Calculate vertex position
