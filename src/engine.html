@@ -71,7 +71,7 @@
         //---------------------Lighting testing (Maybe remove later)---------------------------------
         var g_lightingData = {
             lightDirX: -1,
-            lightDirY: -1,
+            lightDirY: 1,
             lightDirZ: -0.5,
             lightColorR: 0.5,
             lightColorG: 0.5,
@@ -229,6 +229,13 @@
                 mainTexture: "grass"
             };
 
+            let grassGroundMat = {
+                tint: new V3(1,1,1),
+                shininess: 10, 
+                specularIntensity: 0.2,
+                mainTexture: "grass"
+            };
+
             let beefMat = {
                 tint: new V3(1,1,1),
                 shininess: 15, 
@@ -253,9 +260,8 @@
             let lantern = {name: "lantern", material: lanternMat, mesh: lanternMesh, position: lanternPosition, scale: [0.1,0.1,0.1], rotation: [0,-90,0], renderer: g_renderer, shaderData: g_shaderData}
             //addObject(lantern)
 
-            //let grass = {name: "grass", material: grassMat, mesh: grassMesh, position: [0,0,0], scale: [.01,.01,.01], renderer: g_renderer}
             //Grass
-            let totalGrass = 8;
+            let totalGrass = 30;
             let halfRoot = Math.pow(totalGrass, 0.5)/2.0;
             let invHalfRoot = 1.0/halfRoot;
             
@@ -280,6 +286,9 @@
                     addObject({name: "grass_" + x + "_" + y, material: grassMat, mesh: grassMesh, position: [x + xOffset ,0,y + yOffset], scale: [.01,.01,.01], rotation: [0,0,0], renderer: grassRenderer, shaderData: grassShaderData});
                 }   
             }
+            
+            let grassGround = {name: "grassGround", material: grassGroundMat, mesh: Primitives.Quad.getMesh(), position: [0,0,0], scale: [2,2,2], rotation: [90,0,0], renderer: g_renderer, shaderData: g_shaderData}
+            addObject(grassGround);
 
             g_grid = new GridAxis();
             
