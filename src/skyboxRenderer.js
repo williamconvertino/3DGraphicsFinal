@@ -20,25 +20,25 @@ class SkyboxRenderer extends Renderer {
         let cameraPosLoc = gl.getUniformLocation(this.program, "u_cameraPos");
         gl.uniform3fv(cameraPosLoc, cameraPos); 
 
-        // set model, view and projection matrices in the vertex shader
-        let modelMatrixLoc = gl.getUniformLocation(this.program, "u_matrixM");
-        gl.uniformMatrix4fv(modelMatrixLoc, false, model.modelMatrix.toFloat32());
+        // // set model, view and projection matrices in the vertex shader
+        // let modelMatrixLoc = gl.getUniformLocation(this.program, "u_matrixM");
+        // gl.uniformMatrix4fv(modelMatrixLoc, false, model.modelMatrix.toFloat32());
         let viewMatrixLoc = gl.getUniformLocation(this.program, "u_matrixV");
         gl.uniformMatrix4fv(viewMatrixLoc, false, viewMatrix.toFloat32());
         let projMatrixLoc = gl.getUniformLocation(this.program, "u_matrixP");
         gl.uniformMatrix4fv(projMatrixLoc, false, projectionMatrix.toFloat32());
 
         
-        // set model, view and projection matrices in the vertex shader
-        let modelMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixM");
-        gl.uniformMatrix4fv(modelMatrixLocInv, false, M4.invert(model.modelMatrix).toFloat32());
-        let viewMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixV");
-        gl.uniformMatrix4fv(viewMatrixLocInv, false, M4.invert(viewMatrix).toFloat32());
-        let projMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixP");
-        gl.uniformMatrix4fv(projMatrixLocInv, false, M4.invert(projectionMatrix).toFloat32());
+        // // set model, view and projection matrices in the vertex shader
+        // let modelMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixM");
+        // gl.uniformMatrix4fv(modelMatrixLocInv, false, M4.invert(model.modelMatrix).toFloat32());
+        // let viewMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixV");
+        // gl.uniformMatrix4fv(viewMatrixLocInv, false, M4.invert(viewMatrix).toFloat32());
+        // let projMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixP");
+        // gl.uniformMatrix4fv(projMatrixLocInv, false, M4.invert(projectionMatrix).toFloat32());
         
-        let skyboxMatrixLoc = gl.getUniformLocation(this.program, "u_skyboxMatrix");
-        gl.uniformMatrix4fv(skyboxMatrixLoc, false, M4.invert(M4.multM4( projectionMatrix, viewMatrix)).toFloat32());
+        // let skyboxMatrixLoc = gl.getUniformLocation(this.program, "u_skyboxMatrix");
+        // gl.uniformMatrix4fv(skyboxMatrixLoc, false, M4.invert(M4.multM4( projectionMatrix, viewMatrix)).toFloat32());
 
         //Set skybox texture
         gl.activeTexture(gl.TEXTURE0);
