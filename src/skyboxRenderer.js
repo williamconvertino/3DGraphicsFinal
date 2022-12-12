@@ -48,5 +48,6 @@ class SkyboxRenderer extends Renderer {
         gl.disable(gl.DEPTH_TEST);
         super.drawModel(model, camera, shaderData);
         gl.enable(gl.DEPTH_TEST);
+        return this;
     }
 }

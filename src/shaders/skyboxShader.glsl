@@ -20,7 +20,7 @@ uniform mat4 u_skyboxMatrix;
 
 void main() {
     
-    v_texCoord = (vec4 (a_position, 1)).xyz;
+    v_texCoord = (u_matrixV * u_matrixP * vec4 (a_position, 1)).xyz;
     gl_Position =  vec4(a_position, 1.0);
 }
 
