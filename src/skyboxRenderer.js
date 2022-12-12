@@ -28,7 +28,8 @@ class SkyboxRenderer extends Renderer {
         let projMatrixLoc = gl.getUniformLocation(this.program, "u_matrixP");
         gl.uniformMatrix4fv(projMatrixLoc, false, projectionMatrix.toFloat32());
 
-        
+        let timeLoc = gl.getUniformLocation(this.program, "u_time");
+        gl.uniform1f(timeLoc, shaderData.time);
         // // set model, view and projection matrices in the vertex shader
         // let modelMatrixLocInv = gl.getUniformLocation(this.program, "u_invMatrixM");
         // gl.uniformMatrix4fv(modelMatrixLocInv, false, M4.invert(model.modelMatrix).toFloat32());

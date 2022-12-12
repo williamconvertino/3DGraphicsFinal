@@ -195,7 +195,7 @@
 
             //Skybox
             GLUtils.loadCubeMap("skybox", "../resources/textures/sky_left.jpg", "../resources/textures/sky_front.jpg", "../resources/textures/sky_up.jpg", "../resources/textures/sky_down.jpg", "../resources/textures/sky_right.jpg", "../resources/textures/sky_back.jpg",);
-            let skybox = {name: "skybox", material: null, mesh: Primitives.Skybox.getMesh(), position: [0,0,0], scale: [1,1,1], rotation: [0,0,0], renderer: skyboxRenderer, shaderData: {}}
+            let skybox = {name: "skybox", material: null, mesh: Primitives.Skybox.getMesh(), position: [0,0,0], scale: [1,1,1], rotation: [0,0,0], renderer: skyboxRenderer, shaderData: {time: 0}}
             addObject(skybox);
             
 

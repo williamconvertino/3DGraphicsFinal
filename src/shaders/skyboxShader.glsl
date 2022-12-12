@@ -20,10 +20,12 @@ uniform mat4 u_skyboxMatrix;
 
 uniform vec3 u_cameraPos;
 
+uniform float u_time;
+
 void main() {
     
     v_texCoord = a_position;
-    gl_Position = u_matrixP * u_matrixV * vec4(a_position + u_cameraPos, 1.0) ;//+ vec4(u_cameraPos, 1.0);
+    gl_Position = u_matrixP * u_matrixV * vec4(a_position + u_cameraPos, 1.0) + sin(u_time/50.0) ;//+ vec4(u_cameraPos, 1.0);
 }
 
 #endif
