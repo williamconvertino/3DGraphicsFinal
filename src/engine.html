@@ -205,6 +205,8 @@
             GLUtils.loadTexture("bunny", "../resources/textures/bunny.jpg");
             GLUtils.loadTexture("beef", "../resources/textures/beef.png");
             GLUtils.loadTexture("solar", "../resources/textures/solar.png");
+            GLUtils.loadTexture("leaves", "../resources/textures/flowerTree.jpg"); 
+            GLUtils.loadTexture("bark", "../resources/textures/treeTrunk.jpg"); 
 
             //Load models
 
@@ -212,6 +214,7 @@
             let grassMesh = OBJLoader.getMesh("grass","../resources/models/grass.obj");   
             let beefMesh = OBJLoader.getMesh("beef","../resources/models/beef.obj");   
             let lanternMesh = OBJLoader.getMesh("lantern","../resources/models/lantern.obj");   
+            let treeMesh = OBJLoader.getMesh("tree","../resources/models/tree.obj");   
 
             //Define materials
         
@@ -249,16 +252,30 @@
                 specularIntensity: 0.2,
                 mainTexture: "solar"
             }
+            
+            let leavesMat = {
+                tint: new V3(1.0,1.0,1.0),
+                shininess: 5,
+                specularIntensity: 0.2,
+                mainTexture: "leaves"
+            }
+
+            let barkMat = {
+                tint: new V3(1.0,1.0,1.0),
+                shininess: 1,
+                specularIntensity: 0.1,
+                mainTexture: "bark"
+            }
 
             let bunny = {name: "bunny", material: bunnyMat, mesh: bunnyMesh, position: [0,0,0], scale: [1,1,1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
             
             let beef = {name: "beef", material: beefMat, mesh: beefMesh, position: [0,0,0], scale: [0.1,0.1,0.1], rotation: [0,0,0], renderer: g_renderer, shaderData: g_shaderData}
-            //addObject(beef)
+            addObject(beef)
 
             let lanternPosition = [-0.55,0.65,0.85];
             g_shaderData.lightingData.pointPosition = new V3(lanternPosition[0], lanternPosition[1] - 0.5, lanternPosition[2]);
             let lantern = {name: "lantern", material: lanternMat, mesh: lanternMesh, position: lanternPosition, scale: [0.1,0.1,0.1], rotation: [0,-90,0], renderer: g_renderer, shaderData: g_shaderData}
-            //addObject(lantern)
+            addObject(lantern)
 
             //Grass
             let totalGrass = 30;
@@ -289,6 +306,31 @@
             
             let grassGround = {name: "grassGround", material: grassGroundMat, mesh: Primitives.Quad.getMesh(), position: [0,0,0], scale: [2,2,2], rotation: [90,0,0], renderer: g_renderer, shaderData: g_shaderData}
             addObject(grassGround);
+
+
+            // Tree creation
+            let treeShaderData = {
+                        height: 1,
+                        grassBottom: 0.0,
+                        waveDistance: 0.03,
+                        waveSpeed: 3,
+                        time: 0,
+                        uv: [0,0]
+                    }
+            let tree1 = {name: "tree1", material: barkMat, mesh: treeMesh, position: [1,0,1], scale: [-.5,.5,.5], rotation: [0,0,0], renderer: grassRenderer, shaderData: treeShaderData}
+            Object.keys(g_shaderData).forEach(entry => {
+                        treeShaderData[entry] = g_shaderData[entry];
+                    });
+            addObject(tree1);
+
+            let tree2 = {name: "tree2", material: barkMat, mesh: treeMesh, position: [-1,0,1], scale: [.5,.5,.5], rotation: [0,0,0], renderer: grassRenderer, shaderData: treeShaderData}
+            addObject(tree2);
+
+            let tree3 = {name: "tree3", material: barkMat, mesh: treeMesh, position: [1,0,-1], scale: [.5,.5,.5], rotation: [0,0,0], renderer: grassRenderer, shaderData: treeShaderData}
+            addObject(tree3);
+
+            let tree4 = {name: "tree3", material: barkMat, mesh: treeMesh, position: [-1,0,-1], scale: [-.5,.5,.5], rotation: [0,0,0], renderer: grassRenderer, shaderData: treeShaderData}
+            addObject(tree4);
 
             g_grid = new GridAxis();
             
