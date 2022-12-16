@@ -241,7 +241,7 @@ For example in Atom install atom-live-server package and start with Packages -> 
         return texture;
     }
 
-    static loadCubeMap (name,
+    static loadCubeMap(name,
         imgSrcPositiveX, imgSrcNegativeX,
         imgSrcPositiveY, imgSrcNegativeY,
         imgSrcPositiveZ, imgSrcNegativeZ){
@@ -251,40 +251,46 @@ For example in Atom install atom-live-server package and start with Packages -> 
         
         // set up face information
         const faceInfos = [
-        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, src: imgSrcPositiveX },
-        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, src: imgSrcNegativeX },
-        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, src: imgSrcPositiveY },
-        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, src: imgSrcNegativeY },
-        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, src: imgSrcPositiveZ },
-        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, src: imgSrcNegativeZ }
+        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, src: imgSrcPositiveX , image:new Image()},
+        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, src: imgSrcNegativeX , image:new Image()},
+        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, src: imgSrcPositiveY , image:new Image()},
+        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, src: imgSrcNegativeY , image:new Image()},
+        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, src: imgSrcPositiveZ , image:new Image()},
+        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, src: imgSrcNegativeZ , image:new Image()}
         ];
         let facesLoaded = 0;
         
         // for each face, set up temporary 1x1px texure and set image loading callback
         faceInfos.forEach((faceInfo) => {
-        const {target, src} = faceInfo;
+        const {target, src, image} = faceInfo;
         // Fill all the textures with a 1x1 blue pixel.
         gl.texImage2D(target, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
         
         // Asynchronously load an image
-        let image = new Image();
         image.onload = function() {
         facesLoaded++;
         // Now that the image has loaded make copy it to the texture.
+        if(facesLoaded === 6) {
+        faceInfos.forEach((faceInfo) => {
+        const {target, src, image} = faceInfo;
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); // flip y, since webgl uses inverse y texture cooridinates
         gl.texImage2D(target, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-        if(facesLoaded === 6)
+        });
         gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+        }
         };
         image.onerror = function() {
         console.error("Error loading image " + src);
         };
         image.src = src;
         });
-        console.log("Loaded " + name);
+        
         TextureCache[name] = texture;
         return texture;
         }
+        
 }
 
